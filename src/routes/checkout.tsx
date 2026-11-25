@@ -30,6 +30,7 @@ function CheckoutPage() {
   const [loadingCep, setLoadingCep] = useState(false);
   const [cepMessage, setCepMessage] = useState("");
   const [payment, setPayment] = useState("pix");
+  const [paymentModalOpen, setPaymentModalOpen] = useState(false);
 
   const updateCustomer = (field: keyof Customer, value: string) => setCustomer((current) => ({ ...current, [field]: value }));
   const updateAddress = (field: keyof Address, value: string) => setAddress((current) => ({ ...current, [field]: value }));
@@ -171,22 +172,53 @@ function CheckoutPage() {
             {step === 3 && (
               <div>
                 <p className="text-xs font-bold uppercase tracking-widest text-accent">Etapa 3 de 3</p>
-                <h2 className="mt-2 font-display text-2xl font-bold">Forma de pagamento</h2>
-                <p className="mt-1 text-sm text-muted-foreground">Escolha como deseja pagar seu pedido.</p>
-                <button type="button" onClick={() => setPayment("pix")} className={`mt-6 flex w-full items-center gap-4 rounded-2xl border p-5 text-left transition ${payment === "pix" ? "border-accent bg-accent/10" : "border-border bg-background/40"}`}>
-                  <span className="grid size-12 place-items-center rounded-xl bg-accent/15 text-accent"><Wallet className="size-6" /></span>
-                  <span className="flex-1"><strong className="block">PIX</strong><span className="mt-1 block text-sm text-muted-foreground">Pagamento instantâneo</span></span>
-                  <span className={`size-5 rounded-full border-2 ${payment === "pix" ? "border-accent bg-accent ring-4 ring-accent/15" : "border-muted-foreground"}`} />
-                </button>
-                <div className="mt-6 rounded-2xl bg-background/50 p-4 text-sm">
-                  <p className="font-bold">Dados do pedido</p>
-                  <p className="mt-2 text-muted-foreground">{customer.name} · {customer.email}</p>
-                  <p className="text-muted-foreground">{address.street}, {address.number}{address.complement ? ` · ${address.complement}` : ""} — {address.neighborhood}, {address.city}/{address.state}, CEP {address.cep}</p>
-                </div>
-                <div className="mt-8 flex flex-col-reverse gap-3 sm:flex-row">
-                  <button type="button" onClick={() => setStep(2)} className="flex items-center justify-center gap-2 rounded-full border border-border px-6 py-4 font-bold transition hover:bg-secondary"><ArrowLeft className="size-4" /> Voltar</button>
+                <h2 className="mt-2 font-display text-2xl font-bold">Revise e escolha como pagar</h2>
+                <p className="mt-1 text-sm text-muted-foreground">Confira os dados antes de gerar seu PIX.</p>
+
+                <div className="mt-6 rounded-2xl border border-accent/40 bg-accent/5 p-5">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <span className="grid size-12 place-items-center rounded-xl bg-accent/15 text-accent"><Wallet className="size-6" /></span>
+                      <div><strong className="block">PIX</strong><span className="text-sm text-muted-foreground">Aprovação rápida, direto pelo aplicativo do seu banco</span></div>
+                    </div>
+                    <span className="rounded-full bg-accent/15 px-3 py-1 text-xs font-bold text-accent">Selecionado</span>
                   </div>
-                <PixPayment customer={customer} />
+                  <div className="mt-5 flex items-end justify-between border-t border-border pt-4">
+                    <span className="text-sm text-muted-foreground">Total com frete grátis</span>
+                    <strong className="font-display text-3xl text-gold">R$ 97,00</strong>
+                  </div>
+                </div>
+
+                <div className="mt-5 rounded-2xl bg-background/50 p-4 text-sm">
+                  <p className="font-bold">Entrega para</p>
+                  <p className="mt-2 text-muted-foreground">{customer.name} · {customer.email} · {customer.phone}</p>
+                  <p className="mt-1 text-muted-foreground">{address.street}, {address.number}{address.complement ? ` · ${address.complement}` : ""} — {address.neighborhood}, {address.city}/{address.state}, CEP {address.cep}</p>
+                </div>
+
+                <div className="mt-8 flex flex-col-reverse gap-3 sm:flex-row">
+                  <button type="button" onClick={() => setStep(2)} className="flex items-center justify-center gap-2 rounded-full border border-border px-6 py-4 font-bold transition hover:bg-secondary"><ArrowLeft className="size-4" /> Voltar e editar</button>
+                  <button type="button" onClick={() => setPaymentModalOpen(true)} className="flex flex-1 items-center justify-center gap-2 rounded-full bg-primary px-6 py-4 font-bold text-primary-foreground shadow-lg transition hover:brightness-110"><LockKeyhole className="size-4" /> Continuar para pagamento <ArrowRight className="size-5" /></button>
+                </div>
+
+                <div className={paymentModalOpen ? "fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-black/75 p-3 backdrop-blur-sm sm:p-6" : "hidden"} role="dialog" aria-modal="true" aria-labelledby="pix-modal-title">
+                  <div className="my-auto w-full max-w-lg rounded-3xl border border-accent/30 bg-card p-5 shadow-2xl sm:p-7">
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <p className="text-xs font-bold uppercase tracking-widest text-accent">Ambiente protegido</p>
+                        <h3 id="pix-modal-title" className="mt-2 font-display text-2xl font-black">Finalize com PIX</h3>
+                        <p className="mt-1 text-sm text-muted-foreground">Gere seu código e pague pelo aplicativo do seu banco.</p>
+                      </div>
+                      <button type="button" onClick={() => setPaymentModalOpen(false)} aria-label="Fechar janela de pagamento" className="grid size-10 shrink-0 place-items-center rounded-full border border-border text-muted-foreground transition hover:bg-secondary hover:text-foreground">×</button>
+                    </div>
+                    <div className="mt-5 flex items-center justify-between rounded-2xl bg-background/60 p-4">
+                      <div><p className="text-sm font-semibold">Árvore Natalina da Esperança</p><p className="mt-1 text-xs text-muted-foreground">1 unidade · Frete grátis</p></div>
+                      <strong className="font-display text-2xl text-gold">R$ 97,00</strong>
+                    </div>
+                    <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground"><LockKeyhole className="size-4 text-accent" /> Pagamento processado com segurança via Fruitfy</div>
+                    <PixPayment customer={customer} />
+                    <p className="mt-4 text-center text-xs text-muted-foreground">Não feche esta página enquanto aguarda a confirmação do pagamento.</p>
+                  </div>
+                </div>
               </div>
             )}
           </section>
