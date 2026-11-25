@@ -15,8 +15,8 @@ interface CtaProps extends ComponentProps<"a"> {
   size?: "sm" | "lg";
 }
 
-/** Botão de compra padrão: direciona para o checkout dedicado. */
-export function Cta({ size = "lg", className, children, ...rest }: CtaProps) {
+/** Botão de compra padrão: registra InitiateCheckout e direciona ao checkout. */
+export function Cta({ size = "lg", className, children, onClick, ...rest }: CtaProps) {
   return (
     <a
       href={BUY}
@@ -25,6 +25,18 @@ export function Cta({ size = "lg", className, children, ...rest }: CtaProps) {
         size === "lg" ? "px-8 py-4 text-base sm:text-lg" : "px-5 py-2.5 text-sm",
         className,
       )}
+      onClick={(event) => {
+        onClick?.(event);
+        if (event.defaultPrevented) return;
+        const pixelWindow = window as Window & { fbq?: (...args: unknown[]) => void };
+        pixelWindow.fbq?.("track", "InitiateCheckout", {
+          content_name: "Árvore Natalina da Esperança",
+          content_category: "Árvore de Natal",
+          content_type: "product",
+          value: 97,
+          currency: "BRL",
+        });
+      }}
       {...rest}
     >
       {children}
@@ -32,7 +44,7 @@ export function Cta({ size = "lg", className, children, ...rest }: CtaProps) {
   );
 }
 
-export function ProductPhoto({ className }: { className?: string }) {
+export function ProductPhoto({ className, priority = false }: { className?: string; priority?: boolean }) {
   return (
     <img
       src={productPhoto.url}
@@ -40,6 +52,8 @@ export function ProductPhoto({ className }: { className?: string }) {
       width={256}
       height={384}
       decoding="async"
+      loading={priority ? "eager" : "lazy"}
+      fetchPriority={priority ? "high" : "auto"}
       className={className}
     />
   );
