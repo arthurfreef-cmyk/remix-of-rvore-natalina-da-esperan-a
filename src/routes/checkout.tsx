@@ -29,7 +29,6 @@ function CheckoutPage() {
   const [address, setAddress] = useState<Address>({ cep: "", street: "", number: "", complement: "", neighborhood: "", city: "", state: "" });
   const [loadingCep, setLoadingCep] = useState(false);
   const [cepMessage, setCepMessage] = useState("");
-  const [payment, setPayment] = useState("pix");
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
 
   const updateCustomer = (field: keyof Customer, value: string) => setCustomer((current) => ({ ...current, [field]: value }));
@@ -200,8 +199,8 @@ function CheckoutPage() {
                   <button type="button" onClick={() => setPaymentModalOpen(true)} className="flex flex-1 items-center justify-center gap-2 rounded-full bg-primary px-6 py-4 font-bold text-primary-foreground shadow-lg transition hover:brightness-110"><LockKeyhole className="size-4" /> Continuar para pagamento <ArrowRight className="size-5" /></button>
                 </div>
 
-                <div className={paymentModalOpen ? "fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-black/75 p-3 backdrop-blur-sm sm:p-6" : "hidden"} role="dialog" aria-modal="true" aria-labelledby="pix-modal-title">
-                  <div className="my-auto w-full max-w-lg rounded-3xl border border-accent/30 bg-card p-5 shadow-2xl sm:p-7">
+                <div className={paymentModalOpen ? "fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-black/75 p-3 backdrop-blur-sm sm:p-6" : "hidden"} role="dialog" aria-modal="true" aria-labelledby="pix-modal-title" tabIndex={-1} onKeyDown={(event) => { if (event.key === "Escape") setPaymentModalOpen(false); }} onClick={() => setPaymentModalOpen(false)}>
+                  <div className="my-auto w-full max-w-lg rounded-3xl border border-accent/30 bg-card p-5 shadow-2xl sm:p-7" onClick={(event) => event.stopPropagation()}>
                     <div className="flex items-start justify-between gap-4">
                       <div>
                         <p className="text-xs font-bold uppercase tracking-widest text-accent">Ambiente protegido</p>
