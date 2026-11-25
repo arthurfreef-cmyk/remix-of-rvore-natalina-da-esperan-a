@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, ArrowRight, Check, CheckCircle2, LockKeyhole, MapPin, PackageCheck, ShieldCheck, Truck, Wallet } from "lucide-react";
 import { ProductPhoto } from "@/components/landing/ui";
+import { PixPayment } from "@/components/landing/pix-payment";
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({
@@ -177,9 +178,6 @@ function CheckoutPage() {
                   <span className="flex-1"><strong className="block">PIX</strong><span className="mt-1 block text-sm text-muted-foreground">Pagamento instantâneo</span></span>
                   <span className={`size-5 rounded-full border-2 ${payment === "pix" ? "border-accent bg-accent ring-4 ring-accent/15" : "border-muted-foreground"}`} />
                 </button>
-                <div className="mt-5 rounded-2xl border border-accent/30 bg-accent/5 p-4 text-sm">
-                  <div className="flex gap-3"><ShieldCheck className="size-5 shrink-0 text-accent" /><p><strong>Pagamento protegido</strong><br /><span className="text-muted-foreground">A geração do QR Code e do código PIX será habilitada após conectar o provedor de pagamento à API do site. Nenhum pagamento será simulado nesta etapa.</span></p></div>
-                </div>
                 <div className="mt-6 rounded-2xl bg-background/50 p-4 text-sm">
                   <p className="font-bold">Dados do pedido</p>
                   <p className="mt-2 text-muted-foreground">{customer.name} · {customer.email}</p>
@@ -187,9 +185,8 @@ function CheckoutPage() {
                 </div>
                 <div className="mt-8 flex flex-col-reverse gap-3 sm:flex-row">
                   <button type="button" onClick={() => setStep(2)} className="flex items-center justify-center gap-2 rounded-full border border-border px-6 py-4 font-bold transition hover:bg-secondary"><ArrowLeft className="size-4" /> Voltar</button>
-                  <button type="button" disabled className="flex flex-1 cursor-not-allowed items-center justify-center gap-2 rounded-full bg-primary/50 px-6 py-4 font-bold text-primary-foreground opacity-70" title="Conecte uma API PIX para habilitar">PIX em configuração <LockKeyhole className="size-4" /></button>
-                </div>
-                <p className="mt-3 text-center text-xs text-muted-foreground">Para ativar a cobrança real, conecte as credenciais do seu provedor PIX no servidor.</p>
+                  </div>
+                <PixPayment customer={customer} />
               </div>
             )}
           </section>
@@ -208,7 +205,7 @@ function CheckoutPage() {
             <div className="mt-5 space-y-3 text-xs text-muted-foreground">
               <p className="flex items-center gap-2"><PackageCheck className="size-4 text-accent" /> Frete grátis para todo o Brasil</p>
               <p className="flex items-center gap-2"><LockKeyhole className="size-4 text-accent" /> Seus dados são usados para processar o pedido</p>
-              <p className="flex items-center gap-2"><ShieldCheck className="size-4 text-accent" /> Pagamento PIX após integração da API</p>
+              <p className="flex items-center gap-2"><ShieldCheck className="size-4 text-accent" /> Pagamento PIX seguro via Fruitfy</p>
             </div>
             <Link to="/" className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-accent hover:underline"><ArrowLeft className="size-4" /> Voltar à página do produto</Link>
           </aside>
